@@ -10,6 +10,6 @@ for i in dataset.train_set:
     if label == 0:
         true_facts.append(s + '\t' + p + '\t' + o + '\n')
 
-with open('true_facts.txt', 'w') as writer:
+with open('dataset/true_facts_train.txt', 'w') as writer:
     for t in true_facts:
         writer.write(t)
