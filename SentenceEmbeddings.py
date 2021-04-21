@@ -9,9 +9,11 @@ def cosine(u, v):
 
 # extracting evedience sentence and generating embeddings from those evedence sentences and storing them in CSV file format
 class SentenceEmbeddings:
-    def __init__(self, data_dir=None):
-        # self.extract_sentence_embeddings_from_factcheck_output_multiclass(data_dir)
-        self.extract_sentence_embeddings_from_factcheck_output(data_dir)
+    def __init__(self, data_dir=None,multiclass=True):
+        if multiclass:
+            self.extract_sentence_embeddings_from_factcheck_output_multiclass(data_dir)
+        else:
+            self.extract_sentence_embeddings_from_factcheck_output(data_dir)
 
 
 
@@ -817,4 +819,4 @@ class SentenceEmbeddings:
 
 
 path_dataset_folder = 'dataset/'
-se = SentenceEmbeddings(data_dir=path_dataset_folder)
+se = SentenceEmbeddings(data_dir=path_dataset_folder,multiclass=True)

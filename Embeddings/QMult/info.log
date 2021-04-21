@@ -1,0 +1,1 @@
+2021-03-17 11:07:26,056 - QMult - INFO - No test set is found and k-fold cross-validation is set to less than 2 (***num_folds_for_cv*** => 0). Hence we do not evaluate the model

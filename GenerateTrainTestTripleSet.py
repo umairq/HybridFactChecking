@@ -5,9 +5,11 @@ from sentence_transformers import SentenceTransformer
 
 # extracting evedience sentence and generating training and testing triples from the list of facts in factbecnh.
 class GenerateTrainTestTriplesSet:
-    def __init__(self, data_dir=None):
-        self.extract_sentence_embeddings_from_factcheck_output_multiclass(data_dir)
-        # self.extract_sentence_embeddings_from_factcheck_output(data_dir)
+    def __init__(self, data_dir=None,multiclass=True):
+        if multiclass:
+            self.extract_sentence_embeddings_from_factcheck_output_multiclass(data_dir)
+        else:
+            self.extract_sentence_embeddings_from_factcheck_output(data_dir)
 
 
     @staticmethod
@@ -325,4 +327,4 @@ class GenerateTrainTestTriplesSet:
             prediction_file.write(new_line)
 
 path_dataset_folder = 'dataset/'
-se = GenerateTrainTestTriplesSet(data_dir=path_dataset_folder)
+se = GenerateTrainTestTriplesSet(data_dir=path_dataset_folder,multiclass=True)

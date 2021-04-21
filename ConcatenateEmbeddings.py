@@ -148,7 +148,7 @@ class ConcatEmbeddings:
 
 
 
-multiclass = False
+multiclass = True
 test2 = ["date/","domain/","domainrange/","mix/","property/","random/","range/"]
 path_dataset_folder = 'dataset/'
 
