@@ -1,8 +1,14 @@
 class Data:
-    def __init__(self, data_dir=None):
+    def __init__(self, data_dir=None, subpath=None):
+
         # Quick workaround as we happen to have duplicate triples.
-        self.train_set = list(set(self.load_data(data_dir, data_type="train")))
-        self.test_data = list(set(self.load_data(data_dir, data_type="test")))
+        # None if load complete data, otherwise load parts of dataset with folders in wrong directory.
+        if subpath==None:
+            self.train_set = list(set(self.load_data(data_dir , data_type="train")))
+            self.test_data = list(set(self.load_data(data_dir , data_type="test")))
+        else:
+            self.train_set = list(set(self.load_data(data_dir+"wrong/train/"+subpath, data_type="train")))
+            self.test_data = list(set(self.load_data(data_dir+"wrong/test/"+subpath, data_type="test")))
 
         self.data = self.train_set + self.test_data
         self.entities = self.get_entities(self.data)
