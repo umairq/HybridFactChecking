@@ -8,8 +8,8 @@ class CData:
             self.train_set = pd.read_csv(data_dir + "trainCombinedEmbeddings.csv")
             self.test_data = pd.read_csv(data_dir + "testCombinedEmbeddings.csv")
         else:
-            self.train_set = pd.read_csv(data_dir+"wrong/train/"+subpath+"trainCombinedEmbeddings.csv")
-            self.test_data = pd.read_csv(data_dir+"wrong/test/"+subpath+"testCombinedEmbeddings.csv")
+            self.train_set = pd.read_csv(data_dir+"data/train/"+subpath+"trainCombinedEmbeddings.csv")
+            self.test_data = pd.read_csv(data_dir+"data/test/"+subpath+"testCombinedEmbeddings.csv")
 
 
 

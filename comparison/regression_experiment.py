@@ -5,14 +5,17 @@ from sklearn.metrics import accuracy_score
 import pandas as pd
 from sklearn.metrics import classification_report
 # from java.lang import sys
+# from data import Data
+# from data import Data
+
 
 def load_train_data(path_dataset_folder="", path=None):
     if path == None:
         train_folder = ""
         test_folder = ""
     else:
-        train_folder = "wrong/train/"+path
-        test_folder = "wrong/test/" + path
+        train_folder = "train/"+path
+        test_folder = "test/" + path
 
     df_train_set = pd.read_csv(path_dataset_folder +train_folder+ 'trainCombinedEmbeddings.csv')
     y_train = df_train_set.iloc[:,-1:]
@@ -33,12 +36,22 @@ def appplyLogisticRegression ( dataset_path, path=None):
     print("starting regression experiments")
     # Create Logistic Regression classifer object
     clf = LogisticRegression(random_state=0).fit(X_train, y_train.values[:, 0])
+
+    print('on train data')
     # Train Decision Tree Classifer
     print(accuracy_score(y_test, clf.predict(X_test)))
     # Predict the response for test dataset
     y_pred = clf.predict(X_test)
 
     print(classification_report(y_test.values[:, 0], y_pred))
+
+    print('on test data')
+    # Train Decision Tree Classifer
+    print(accuracy_score(y_train, clf.predict(X_train)))
+    # Predict the response for test dataset
+    y_pred = clf.predict(X_train)
+
+    print(classification_report(y_train.values[:, 0], y_pred))
 
 
 def applyJ48 (dataset_path,path=None):
@@ -64,9 +77,14 @@ def applyJ48 (dataset_path,path=None):
 # delchars = "".join(c for c in map(chr, range(sys.maxunicode + 1)) if not c.isdecimal() or not c.isspace())
 
 # X_train, y_train =
-# X_test, y_test  =
-path_dataset_folder = 'dataset/'
-datasets_class = ["date/","domain/","domainrange/","mix/","property/","random/","range/"]
+# X_test, y_test  = "date/",
+# path_dataset_folder = 'dataset/'
+path_dataset_folder = './dataset/data/'
+# datasets_class = ["domain/","domainrange/","mix/","property/","random/","range/"]
+datasets_class = ["domain/"]
 
 # appplyLogisticRegression(path_dataset_folder)
-appplyLogisticRegression(path_dataset_folder, datasets_class[5])
+for line2 in datasets_class:
+    print(line2+" experiments")
+    # dataset = Data(data_dir=path_dataset_folder, subpath=line2)
+    appplyLogisticRegression(path_dataset_folder, line2)

@@ -16,11 +16,12 @@ class ConcatEmbeddings:
 
     @staticmethod
     def concatinateEmbeddingsMulticlass(self, path_dataset_folder=None,str2=None):
-        train_folder = "wrong/train/"+str2
-        test_folder = "wrong/test/"+str2
+        train_folder = "data/train/"+str2
+        test_folder = "data/test/"+str2
         print(train_folder)
-        df_entities = pd.read_csv('Embeddings/ConEx/ConEx_entity_embeddings.csv', index_col=0)
-        df_relations = pd.read_csv('Embeddings/ConEx/ConEx_relation_embeddings.csv', index_col=0)
+        df_entities = pd.read_csv('../Embeddings/ConEx_dbpedia/all_entities_embeddings.txt', index_col=0)
+        # df_entities.drop_duplicate()
+        df_relations = pd.read_csv('../Embeddings/ConEx_dbpedia/all_relations_embeddings.txt', index_col=0)
         df_train_sentence = pd.read_csv(path_dataset_folder +train_folder+ 'trainSE.csv')
         df_test_sentence = pd.read_csv(path_dataset_folder + test_folder+ 'testSE.csv')
         dataset1 = Data(data_dir=path_dataset_folder,subpath=str2)
@@ -35,13 +36,15 @@ class ConcatEmbeddings:
         train_combined_emb_set = []
         for ((idx, (s, p, o, label)), val) in zip(enumerate(train_set), df_train_sentence.values):
             try:
-                triple_embedding = df_entities.loc[s].append(df_relations.loc[p]).append(df_entities.loc[o])
+                # if p == "<http://dbpedia.org/ontology/office>":
+                #     p = "<http://dbpedia.org/ontology/leader>"
+                triple_embedding = df_entities.drop_duplicates().loc[s].append(df_relations.loc[p]).append(df_entities.drop_duplicates().loc[o])
                 # print(type(triple_embedding))
                 sen_emb = pd.DataFrame(val)
                 # print(type(pd.Series(val)))
                 triple_sentence_emb = pd.concat([triple_embedding.T, sen_emb], axis=0)
                 com_emb = pd.DataFrame(triple_sentence_emb.T.values)
-                com_emb.insert(1068, '1068', label)
+                com_emb.insert(2334, '2334', label)
                 # print(com_emb)
                 train_combined_emb_set.append(com_emb.values)
                 # if idx == 2:
@@ -55,20 +58,22 @@ class ConcatEmbeddings:
         test_combined_emb_set = []
         for ((idx, (s, p, o, label)), val) in zip(enumerate(test_set), df_test_sentence.values):
             try:
-                triple_embedding = df_entities.loc[s].append(df_relations.loc[p]).append(df_entities.loc[o])
+                # if p == "<http://dbpedia.org/ontology/office>":
+                #     p = "<http://dbpedia.org/ontology/leader>"
+                triple_embedding = df_entities.drop_duplicates().loc[s].append(df_relations.loc[p]).append(df_entities.drop_duplicates().loc[o])
                 # print(type(triple_embedding))
                 sen_emb = pd.DataFrame(val)
                 # print(type(pd.Series(val)))
                 triple_sentence_emb = pd.concat([triple_embedding.T, sen_emb], axis=0)
                 com_emb = pd.DataFrame(triple_sentence_emb.T.values)
-                com_emb.insert(1068, '1068', label)
+                com_emb.insert(2334, '2334', label)
                 # print(com_emb)
                 test_combined_emb_set.append(com_emb.values)
                 # if idx == 2:
                 #     break
             except Exception as e:
                 print(e)
-                print("test:"  + s + "," + p + "," + o + "," + str(label))
+                print("test:" + str(idx) + s + "," + p + "," + o + "," + str(label))
                 # exit(1)
 
         print(len(test_set))
@@ -80,8 +85,10 @@ class ConcatEmbeddings:
     def concatinateEmbedding(self,path_dataset_folder=None):
         train_folder = ""
         test_folder = ""
-        df_entities = pd.read_csv('Embeddings/ConEx/ConEx_entity_embeddings.csv', index_col=0)
-        df_relations = pd.read_csv('Embeddings/ConEx/ConEx_relation_embeddings.csv', index_col=0)
+        df_entities = pd.read_csv('../Embeddings/ConEx_dbpedia/all_entities_embeddings.txt', index_col=0)
+        df_relations = pd.read_csv('../Embeddings/ConEx_dbpedia/all_relations_embeddings.txt', index_col=0)
+        # df_entities = pd.read_csv('Embeddings/TransE/entity_embedding_filter.tsv', index_col=0)
+        # df_relations = pd.read_csv('Embeddings/TransE/relations.tsv', index_col=0)
         df_train_sentence = pd.read_csv(path_dataset_folder + 'trainSE.csv')
         df_test_sentence = pd.read_csv(path_dataset_folder + 'testSE.csv')
         dataset1 = Data(data_dir=path_dataset_folder,subpath=None)
@@ -150,7 +157,7 @@ class ConcatEmbeddings:
 
 multiclass = True
 test2 = ["date/","domain/","domainrange/","mix/","property/","random/","range/"]
-path_dataset_folder = 'dataset/'
+path_dataset_folder = '../dataset/'
 
 if multiclass:
     for str22 in test2:

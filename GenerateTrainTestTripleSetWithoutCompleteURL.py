@@ -2,18 +2,19 @@ from data import Data
 import numpy as np
 import pandas as pd
 from sentence_transformers import SentenceTransformer
-
+# FIRST STEP
 # extracting evedience sentence and generating training and testing triples from the list of facts in factbecnh.
 class GenerateTrainTestTriplesSet:
     def __init__(self, data_dir=None,multiclass=True):
+        self.dataset_file= "textResults4.txt"
         if multiclass:
-            self.extract_sentence_embeddings_from_factcheck_output_multiclass(data_dir)
+            self.extract_sentence_embeddings_from_factcheck_output_multiclass(self,data_dir)
         else:
-            self.extract_sentence_embeddings_from_factcheck_output(data_dir)
+            self.extract_sentence_embeddings_from_factcheck_output(self,data_dir)
 
 
     @staticmethod
-    def extract_sentence_embeddings_from_factcheck_output(data_dir):
+    def extract_sentence_embeddings_from_factcheck_output(self,data_dir):
         data_train = []
         data_test = []
         multiclass_neg_exp = True
@@ -22,7 +23,7 @@ class GenerateTrainTestTriplesSet:
         train = False
         correct = False
 
-        with open(data_dir+"textResults2.txt", "r") as file1:
+        with open(data_dir+ self.dataset_file, "r") as file1:
             for line in file1:
                 if line.__contains__("factbench/factbench/test/"):
                     test = True
@@ -85,7 +86,7 @@ class GenerateTrainTestTriplesSet:
 
 
     @staticmethod
-    def extract_sentence_embeddings_from_factcheck_output_multiclass(data_dir):
+    def extract_sentence_embeddings_from_factcheck_output_multiclass(self, data_dir):
         data_train = []
         data_test = []
         date_data_train = []
@@ -103,6 +104,23 @@ class GenerateTrainTestTriplesSet:
         range_data_train = []
         range_data_test = []
 
+        data_train1 = []
+        data_test1 = []
+        date_data_train1 = []
+        date_data_test1 = []
+        domain_data_train1 = []
+        domain_data_test1 = []
+        domainrange_data_train1 = []
+        domainrange_data_test1 = []
+        mix_data_train1 = []
+        mix_data_test1 = []
+        property_data_train1 = []
+        property_data_test1 = []
+        random_data_train1 = []
+        random_data_test1 = []
+        range_data_train1 = []
+        range_data_test1 = []
+
         multiclass_neg_exp = True
         neg_data_dir = "dataset/"
         pred = []
@@ -110,7 +128,7 @@ class GenerateTrainTestTriplesSet:
         train = False
         correct = False
 
-        with open(data_dir+"textResults2.txt", "r") as file1:
+        with open(data_dir+self.dataset_file, "r") as file1:
             for line in file1:
                 if line.__contains__("factbench/factbench/test/"):
                     test = True
@@ -183,47 +201,63 @@ class GenerateTrainTestTriplesSet:
                     if test == True and train == False:
                         print("test")
                         data_test.append([s, p, o, correct])
+                        data_test1.append([s, p, o, score])
 
                     if test == False and train == True:
                         print("train")
                         data_train.append([s, p, o, correct])
+                        data_train1.append([s, p, o, score])
 
                     if multiclass_neg_exp == True:
                         if test == False and train == True:
                             if neg_data_dir.__contains__("/date/") or neg_data_dir.__contains__("true"):
                                 date_data_train.append([s, p, o, correct])
+                                date_data_train1.append([s, p, o, score])
                             if neg_data_dir.__contains__("/domain/") or neg_data_dir.__contains__("true"):
                                 domain_data_train.append([s, p, o, correct])
+                                domain_data_train1.append([s, p, o, score])
                             if neg_data_dir.__contains__("/domainrange/") or neg_data_dir.__contains__("true"):
                                 domainrange_data_train.append([s, p, o, correct])
+                                domainrange_data_train1.append([s, p, o, score])
                             if neg_data_dir.__contains__("/mix/") or neg_data_dir.__contains__("true"):
                                 mix_data_train.append([s, p, o, correct])
+                                mix_data_train1.append([s, p, o, score])
                             if neg_data_dir.__contains__("/property/") or neg_data_dir.__contains__("true"):
                                 property_data_train.append([s, p, o, correct])
+                                property_data_train1.append([s, p, o, score])
                             if neg_data_dir.__contains__("/random/") or neg_data_dir.__contains__("true"):
                                 random_data_train.append([s, p, o, correct])
+                                random_data_train1.append([s, p, o, score])
                             if neg_data_dir.__contains__("/range/") or neg_data_dir.__contains__("true"):
                                 range_data_train.append([s, p, o, correct])
+                                range_data_train1.append([s, p, o, score])
 
                         if test == True and train == False:
                             if neg_data_dir.__contains__("/date/") or neg_data_dir.__contains__("true"):
                                 date_data_test.append([s, p, o, correct])
+                                date_data_test1.append([s, p, o, score])
                             if neg_data_dir.__contains__("/domain/") or neg_data_dir.__contains__("true"):
                                 domain_data_test.append([s, p, o, correct])
+                                domain_data_test1.append([s, p, o, score])
                             if neg_data_dir.__contains__("/domainrange/") or neg_data_dir.__contains__("true"):
                                 domainrange_data_test.append([s, p, o, correct])
+                                domainrange_data_test1.append([s, p, o, score])
                             if neg_data_dir.__contains__("/mix/") or neg_data_dir.__contains__("true"):
                                 mix_data_test.append([s, p, o, correct])
+                                mix_data_test1.append([s, p, o, score])
                             if neg_data_dir.__contains__("/property/") or neg_data_dir.__contains__("true"):
                                 property_data_test.append([s, p, o, correct])
+                                property_data_test1.append([s, p, o, score])
                             if neg_data_dir.__contains__("/random/") or neg_data_dir.__contains__("true"):
                                 random_data_test.append([s, p, o, correct])
+                                random_data_test1.append([s, p, o, score])
                             if neg_data_dir.__contains__("/range/") or neg_data_dir.__contains__("true"):
                                 range_data_test.append([s, p, o, correct])
+                                range_data_test1.append([s, p, o, score])
 
         data_type1 = ["train","test"]
         for idx, test1 in enumerate(data_type1):
-            neg_data_dir = "wrong/"+test1+"/date/"
+            neg_data_dir = "data/"+test1+"/date/"
             with open(data_dir+neg_data_dir+ test1+".txt", "w") as prediction_file:
                 new_line = ""
                 if test1 == "train":
@@ -234,8 +268,18 @@ class GenerateTrainTestTriplesSet:
                     new_line += head + "\t" + relation + "\t" + tail + "\t" + str(lbl) + "\n"
 
                 prediction_file.write(new_line)
+            with open(data_dir+neg_data_dir+ test1+"_pred.txt", "w") as prediction_file:
+                new_line = ""
+                if test1 == "train":
+                    data_now = date_data_train1
+                else:
+                    data_now = date_data_test1
+                for idx, (head, relation, tail, score) in enumerate(data_now):
+                    new_line += head + "\t" + relation + "\t" + tail + "\t" + str(score) + "\n"
 
-            neg_data_dir = "wrong/"+test1+"/domain/"
+                prediction_file.write(new_line)
+
+            neg_data_dir = "data/"+test1+"/domain/"
             with open(data_dir+neg_data_dir+ test1+".txt", "w") as prediction_file:
                 new_line = ""
                 if test1 == "train":
@@ -246,8 +290,18 @@ class GenerateTrainTestTriplesSet:
                     new_line += head + "\t" + relation + "\t" + tail + "\t" + str(lbl) + "\n"
 
                 prediction_file.write(new_line)
+            with open(data_dir+neg_data_dir+ test1+"_pred.txt", "w") as prediction_file:
+                new_line = ""
+                if test1 == "train":
+                    data_now = domain_data_train1
+                else:
+                    data_now = domain_data_test1
+                for idx, (head, relation, tail, score) in enumerate(data_now):
+                    new_line += head + "\t" + relation + "\t" + tail + "\t" + str(score) + "\n"
 
-            neg_data_dir = "wrong/"+test1+"/domainrange/"
+                prediction_file.write(new_line)
+
+            neg_data_dir = "data/"+test1+"/domainrange/"
             with open(data_dir+neg_data_dir+ test1+".txt", "w") as prediction_file:
                 new_line = ""
                 if test1 == "train":
@@ -258,8 +312,18 @@ class GenerateTrainTestTriplesSet:
                     new_line += head + "\t" + relation + "\t" + tail + "\t" + str(lbl) + "\n"
 
                 prediction_file.write(new_line)
+            with open(data_dir+neg_data_dir+ test1+"_pred.txt", "w") as prediction_file:
+                new_line = ""
+                if test1 == "train":
+                    data_now = domainrange_data_train1
+                else:
+                    data_now = domainrange_data_test1
+                for idx, (head, relation, tail, score) in enumerate(data_now):
+                    new_line += head + "\t" + relation + "\t" + tail + "\t" + str(score) + "\n"
 
-            neg_data_dir = "wrong/"+test1+"/mix/"
+                prediction_file.write(new_line)
+
+            neg_data_dir = "data/"+test1+"/mix/"
             with open(data_dir+neg_data_dir+ test1+".txt", "w") as prediction_file:
                 new_line = ""
                 if test1 == "train":
@@ -270,8 +334,18 @@ class GenerateTrainTestTriplesSet:
                     new_line += head + "\t" + relation + "\t" + tail + "\t" + str(lbl) + "\n"
 
                 prediction_file.write(new_line)
+            with open(data_dir+neg_data_dir+ test1+"_pred.txt", "w") as prediction_file:
+                new_line = ""
+                if test1 == "train":
+                    data_now = mix_data_train1
+                else:
+                    data_now = mix_data_test1
+                for idx, (head, relation, tail, score) in enumerate(data_now):
+                    new_line += head + "\t" + relation + "\t" + tail + "\t" + str(score) + "\n"
 
-            neg_data_dir = "wrong/"+test1+"/property/"
+                prediction_file.write(new_line)
+
+            neg_data_dir = "data/"+test1+"/property/"
             with open(data_dir+neg_data_dir+ test1+".txt", "w") as prediction_file:
                 new_line = ""
                 if test1 == "train":
@@ -282,8 +356,18 @@ class GenerateTrainTestTriplesSet:
                     new_line += head + "\t" + relation + "\t" + tail + "\t" + str(lbl) + "\n"
 
                 prediction_file.write(new_line)
+            with open(data_dir+neg_data_dir+ test1+"_pred.txt", "w") as prediction_file:
+                new_line = ""
+                if test1 == "train":
+                    data_now = property_data_train1
+                else:
+                    data_now = property_data_test1
+                for idx, (head, relation, tail, score) in enumerate(data_now):
+                    new_line += head + "\t" + relation + "\t" + tail + "\t" + str(score) + "\n"
 
-            neg_data_dir = "wrong/"+test1+"/random/"
+                prediction_file.write(new_line)
+
+            neg_data_dir = "data/"+test1+"/random/"
             with open(data_dir+neg_data_dir+ test1+".txt", "w") as prediction_file:
                 new_line = ""
                 if test1 == "train":
@@ -294,8 +378,18 @@ class GenerateTrainTestTriplesSet:
                     new_line += head + "\t" + relation + "\t" + tail + "\t" + str(lbl) + "\n"
 
                 prediction_file.write(new_line)
+            with open(data_dir+neg_data_dir+ test1+"_pred.txt", "w") as prediction_file:
+                new_line = ""
+                if test1 == "train":
+                    data_now = random_data_train1
+                else:
+                    data_now = random_data_test1
+                for idx, (head, relation, tail, score) in enumerate(data_now):
+                    new_line += head + "\t" + relation + "\t" + tail + "\t" + str(score) + "\n"
 
-            neg_data_dir = "wrong/"+test1+"/range/"
+                prediction_file.write(new_line)
+
+            neg_data_dir = "data/"+test1+"/range/"
             with open(data_dir + neg_data_dir + test1+".txt", "w") as prediction_file:
                 new_line = ""
                 if test1 == "train":
@@ -306,25 +400,49 @@ class GenerateTrainTestTriplesSet:
                     new_line += head + "\t" + relation + "\t" + tail + "\t" + str(lbl) + "\n"
 
                 prediction_file.write(new_line)
+            with open(data_dir + neg_data_dir + test1+"_pred.txt", "w") as prediction_file:
+                new_line = ""
+                if test1 == "train":
+                    data_now = range_data_train1
+                else:
+                    data_now = range_data_test1
+                for idx, (head, relation, tail, score) in enumerate(data_now):
+                    new_line += head + "\t" + relation + "\t" + tail + "\t" + str(score) + "\n"
+
+                prediction_file.write(new_line)
 
 
 
 
 
 
-        with open(data_dir+ "train.txt", "w") as prediction_file:
+        with open(data_dir+"complete_dataset/"+ "train.txt", "w") as prediction_file:
             new_line = ""
             for idx, (head, relation, tail, lbl) in enumerate(data_train):
                 new_line += head + "\t" + relation + "\t" + tail + "\t" + str(lbl) + "\n"
 
             prediction_file.write(new_line)
+        with open(data_dir+"complete_dataset/"+ "train_pred.txt", "w") as prediction_file:
+            new_line = ""
+            for idx, (head, relation, tail, score) in enumerate(data_train1):
+                new_line += head + "\t" + relation + "\t" + tail + "\t" + str(score) + "\n"
 
-        with open(data_dir+"test.txt", "w") as prediction_file:
+            prediction_file.write(new_line)
+
+        with open(data_dir+"complete_dataset/"+"test.txt", "w") as prediction_file:
             new_line = ""
             for idx, (head, relation, tail, lbl) in enumerate(data_test):
                 new_line += head + "\t" + relation + "\t" + tail + "\t" + str(lbl) + "\n"
 
             prediction_file.write(new_line)
+        with open(data_dir+"complete_dataset/"+"test_pred.txt", "w") as prediction_file:
+            new_line = ""
+            for idx, (head, relation, tail, score) in enumerate(data_test1):
+                new_line += head + "\t" + relation + "\t" + tail + "\t" + str(score) + "\n"
+
+            prediction_file.write(new_line)
+
+
 
 path_dataset_folder = 'dataset/'
 se = GenerateTrainTestTriplesSet(data_dir=path_dataset_folder,multiclass=True)

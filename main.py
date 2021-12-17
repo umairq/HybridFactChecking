@@ -83,7 +83,7 @@ class Baseline2(torch.nn.Module):
 
 datasets_class = ["date/","domain/","domainrange/","mix/","property/","random/","range/"]
 path_dataset_folder = 'dataset/'
-dataset = CData(data_dir=path_dataset_folder, subpath= datasets_class[5])
+dataset = CData(data_dir=path_dataset_folder, subpath= datasets_class[1])
 num_train, num_test = len(dataset.train_set), len(dataset.test_data)
 # model = Baseline(embedding_dim=10, num_entities=num_entities, num_relations=num_relations)
 model = Baseline3(embedding_dim=1067, train_set=dataset.train_set)
@@ -92,7 +92,7 @@ model = Baseline3(embedding_dim=1067, train_set=dataset.train_set)
 X_dataloader = DataLoader(np.asarray(dataset.train_set), batch_size=256, num_workers=4, shuffle=False)
 
 optimizer = torch.optim.Adam(model.parameters())
-for i in range(500):
+for i in range(1000):
     loss_of_epoch = 0
     for fact_mini_batch in X_dataloader:
         # 1. Zero the gradient buffers
