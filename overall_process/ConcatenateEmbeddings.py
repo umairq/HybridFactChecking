@@ -22,8 +22,8 @@ class ConcatEmbeddings:
         df_entities = pd.read_csv('../Embeddings/ConEx_dbpedia/all_entities_embeddings.txt', index_col=0)
         # df_entities.drop_duplicate()
         df_relations = pd.read_csv('../Embeddings/ConEx_dbpedia/all_relations_embeddings.txt', index_col=0)
-        df_train_sentence = pd.read_csv(path_dataset_folder +train_folder+ 'trainSE.csv')
-        df_test_sentence = pd.read_csv(path_dataset_folder + test_folder+ 'testSE.csv')
+        # df_train_sentence = pd.read_csv(path_dataset_folder +train_folder+ 'trainSE.csv')
+        # df_test_sentence = pd.read_csv(path_dataset_folder + test_folder+ 'testSE.csv')
         dataset1 = Data(data_dir=path_dataset_folder,subpath=str2)
 
         train_set = list((dataset1.load_data(path_dataset_folder+train_folder, data_type="train")))

@@ -4,17 +4,19 @@ from sentence_transformers import SentenceTransformer
 from data import Data
 import numpy as np
 import pandas as pd
+from rdflib import Graph, URIRef, OWL
 # from sentence_transformers import SentenceTransformer
 from select_top_n_sentences import select_top_n_sentences
 import zipfile
-
+import logging
+logging.basicConfig(level=logging.INFO)
 def cosine(u, v):
     return np.dot(u, v) / (np.linalg.norm(u) * np.linalg.norm(v))
 
 # extracting evedience sentence and generating embeddings from those evedence sentences and storing them in CSV file format
 class SentenceEmbeddings:
     def __init__(self, data_dir=None,multiclass=True):
-        self.data_file = "textResult6.txt"
+        self.data_file = "textResult7.txt"
         if multiclass:
             self.extract_sentence_embeddings_from_factcheck_output_multiclass(self, data_dir)
         else:
@@ -175,20 +177,34 @@ class SentenceEmbeddings:
     def saveSentenceEmbeddingToFile(self, path, data2 , type2,n):
         X = np.array(data2)
         print(X.shape)
-        X = X.reshape(X.shape[0], 768*n)
-        X = pd.DataFrame(X)
+        # X = X.reshape(X.shape[0], 768*n)
+        header = []
+        vals = []
+        for test in data2:
+            header.append(np.concatenate((list(test.keys())[0].replace(',','').split(' '),(np.array(list(test.values()))).flatten()), axis=0))
+            # header.append(test.values())
+
+        X = pd.DataFrame(header)
         compression_opts = dict(method='zip', archive_name=type2+'SE.csv')
         X.to_csv(path + type2+'SE.zip', index=False, compression=compression_opts)
         with zipfile.ZipFile(path +type2+ 'SE.zip', 'r') as zip_ref:
             zip_ref.extractall(path)
-
+        print("data saved")
+        # keys = dictionaries[0].keys()
+        # a_file = open("output.csv", "w")
+        # dict_writer = csv.DictWriter(a_file, keys)
+        # dict_writer.writeheader()
+        # dict_writer.writerows(dictionaries)
+        # a_file.close()
     @staticmethod
     def getSentenceEmbeddings(self,data_dir, data, model, true_statements_embeddings, type = 'default', n =3):
         embeddings_textual_evedences = []
         website_ids = set()
         for idx, (s, p, o, c, p2, t1) in enumerate(data):
             # p = self.entityToNLrepresentation(self, p)
+            path = data_dir + "data/test/" + type.replace("_test", "") + "/"
             print('triple->'+s+' '+p+' '+o)
+
             # triple_emb = model.encode(s + " " + p + " " + o.replace("_", " "))
             # print(s + "\t" + p + "\t" + o + "\t" + str(c) + "\t")
             p3 = p2.copy()
@@ -217,13 +233,13 @@ class SentenceEmbeddings:
             for item in temp2:
                 website_ids.add(item)
 
-            sentence_embeddings =[]
+            sentence_embeddings = dict()
             if (s+' '+p+' '+o) not in true_statements_embeddings.keys():
                 temp22, temp33 = select_top_n_sentences(temp2, n, temp,type)
-                sentence_embeddings = model.encode(temp33)
-                true_statements_embeddings[s+' '+p+' '+o] = sentence_embeddings
+                sentence_embeddings[s+' '+p+' '+o]  = model.encode(temp33)
+                true_statements_embeddings[s+' '+p+' '+o] = sentence_embeddings[s+' '+p+' '+o]
             else:
-                sentence_embeddings = true_statements_embeddings[s+' '+p+' '+o]
+                sentence_embeddings[s+' '+p+' '+o]  = true_statements_embeddings[s+' '+p+' '+o]
 
             # for sen in temp33:
             #     e1 = mode
@@ -235,14 +251,14 @@ class SentenceEmbeddings:
 
             # avg_embedding = np.mean(sentence_embeddings, axis=0)
             # print(sentence_embeddings.shape)
-            if (np.size(sentence_embeddings) == 0):
-                sentence_embeddings = np.zeros((n, 768), dtype=int)
+            if (np.size(sentence_embeddings[s+' '+p+' '+o] ) == 0):
+                sentence_embeddings[s+' '+p+' '+o]  = np.zeros((n, 768), dtype=int)
 
-            if (np.size(sentence_embeddings) == 768*(n-2)):
-                sentence_embeddings = np.append(sentence_embeddings,(np.zeros((n-1, 768), dtype=int)), axis=0)
+            if (np.size(sentence_embeddings[s+' '+p+' '+o] ) == 768*(n-2)):
+                sentence_embeddings[s+' '+p+' '+o]  = np.append(sentence_embeddings[s+' '+p+' '+o] ,(np.zeros((n-1, 768), dtype=int)), axis=0)
 
-            if (np.size(sentence_embeddings) == 768*(n-1)):
-                sentence_embeddings = np.append(sentence_embeddings,(np.zeros((n-2, 768), dtype=int)), axis=0)
+            if (np.size(sentence_embeddings[s+' '+p+' '+o] ) == 768*(n-1)):
+                sentence_embeddings[s+' '+p+' '+o]  = np.append(sentence_embeddings[s+' '+p+' '+o] ,(np.zeros((n-2, 768), dtype=int)), axis=0)
 
             embeddings_textual_evedences.append(sentence_embeddings)
         # with open('/home/umair/Documents/pythonProjects/HybridFactChecking/dataset/pg_ranks/' + 'all_websites_ids_'+type+'.txt',"w") as f:
@@ -304,6 +320,53 @@ class SentenceEmbeddings:
     #     return embeddings_textual_evedences
 
     @staticmethod
+    def extractURI(self, data_dir, sub, pred, obj):
+        if obj == 'Quincy,_Massachusetts' and pred == 'spouse':
+            print("test")
+        print(data_dir)
+        g = Graph()
+        g.parse(data_dir)
+        if sub.__contains__("%"):
+            print("test")
+        global countFb
+        for s, p, o in g.triples((None, URIRef('http://dbpedia.org/ontology/'+pred), None)):
+            if (not (None, None, s) in g):
+                print("error")
+                print(g.triples(None, None, s))
+                exit(1)
+            for s1, p1, o1 in  g.triples((None, None, s)):
+                if str(s1).__contains__("freebase"):
+                    for s2, p2, o2 in g.triples((s1, OWL.sameAs, None)):
+                        if str(o2).startswith("http://dbpedia.org/"):
+                            s1 = o2
+                            break
+                        if str(o2).startswith("http://en.dbpedia.org/"):
+                            s1 = o2
+                            break
+                if str(s1).__contains__("freebase"):
+                    countFb = countFb +1
+                    s1 = "http://dbpedia.org/resource/"+ sub.replace(" ","_")
+                s = s1
+            for s1, p1, o1 in g.triples((None, None, o)):
+                if str(o1).__contains__("freebase"):
+                    for s2, p2, o2 in g.triples((o1, OWL.sameAs, None)):
+                        if str(o2).startswith("http://dbpedia.org/"):
+                            o1 = o2
+                            break
+                        if str(o2).startswith("http://en.dbpedia.org/"):
+                            o1 = o2
+                            break
+                if str(o1).__contains__("freebase"):
+                    countFb = countFb +1
+                    o1 =  "http://dbpedia.org/resource/"+ obj.replace(" ","_")
+                o = o1
+        try:
+            print(s, p, o)
+        except:
+            print("s"+s)
+        return "<"+s+">", "<"+p+">", "<"+o+">"
+
+    @staticmethod
     def extract_sentence_embeddings_from_factcheck_output_multiclass(self,data_dir=None):
         data_train = []
         data_test = []
@@ -341,6 +404,7 @@ class SentenceEmbeddings:
                         correct = True
 
                     neg_data_dir = "true"
+                    ddr = line.replace("\n", "")
                     if multiclass_neg_exp:
                         if line.__contains__("/test/wrong/date"):
                             neg_data_dir = "wrong/date/"
@@ -367,6 +431,7 @@ class SentenceEmbeddings:
                         correct = True
 
                     neg_data_dir = "true"
+                    ddr = line.replace("\n", "")
                     if multiclass_neg_exp:
                         if line.__contains__("/train/wrong/date"):
                             neg_data_dir = "wrong/date/"
@@ -396,9 +461,11 @@ class SentenceEmbeddings:
                     assert o != ""
                     p = so[1].split(" predicate ")[1].replace("\n", "")
                     # print("line:" + line+ ":"+ score + ":"+ str(correct))
+                    s, p, o = self.extractURI(self, data_dir=ddr, sub=s, pred=p, obj=o)
                     sentences = []
                     websites = []
                     trustworthiness = []
+
                     if line.__contains__("[ComplexProofs{"):
                         print("line:" + line + ":" + score + ":" + str(correct))
                         for idx, proof in enumerate(line.split("ComplexProofs{")):

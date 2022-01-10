@@ -21,7 +21,7 @@ class GenerateTrainTestTriplesSet:
         # ///////////////////////////////////////////////////////////////////////////////
 
         global countFb
-        self.dataset_file= "textResult6.txt"
+        self.dataset_file= "textResult7.txt"
         if multiclass:
             self.extract_sentence_embeddings_from_factcheck_output_multiclass(self,data_dir)
         else:

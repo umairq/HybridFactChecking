@@ -33,4 +33,4 @@ dependencies:
     - sentence-transformers
     - pandas
     - pytorch
-prefix: /home/umair/anaconda3/envs/hfc2
+prefix: /home/umair/anaconda3/envs/hfc3
